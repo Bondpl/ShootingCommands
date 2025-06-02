@@ -38,21 +38,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun playRandomAudioLoop(context: Context, audioFiles: List<String>, delayMs: Long, setMediaPlayer: (MediaPlayer?) -> Unit){
-    val randomAudio = audioFiles.random()
-    playAudioFromAssets(context, randomAudio) { player ->
-        setMediaPlayer(player)
-        player.setOnCompletionListener {
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(delayMs)
-                playRandomAudioLoop(context, audioFiles, delayMs, setMediaPlayer)
-            }
-        }
-        player.start()
-    }
-
-}
-
 @Composable
 fun AudioButtonScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -164,6 +149,21 @@ private fun playAudioFromAssets(
     }
 }
 
+
+fun playRandomAudioLoop(context: Context, audioFiles: List<String>, delayMs: Long, setMediaPlayer: (MediaPlayer?) -> Unit){
+    val randomAudio = audioFiles.random()
+    playAudioFromAssets(context, randomAudio) { player ->
+        setMediaPlayer(player)
+        player.setOnCompletionListener {
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(delayMs)
+                playRandomAudioLoop(context, audioFiles, delayMs, setMediaPlayer)
+            }
+        }
+        player.start()
+    }
+
+}
 @Preview(showBackground = true)
 @Composable
 fun AudioButtonScreenPreview() {
