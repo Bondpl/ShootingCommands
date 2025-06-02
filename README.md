@@ -18,9 +18,9 @@ This is an Android application that plays random audio commands with a customiza
 
 ### Building the App
 
-1. Clone this repository:
+1. Clone this repository with SSH:
    ```bash
-   git clone https://github.com/yourusername/your-repo.git
+   git clone git@github.com:Bondpl/ShootingCommands.git
    ```
 2. Open the project in Android Studio.
 3. Build and run the app on an emulator or a physical device.
@@ -32,10 +32,6 @@ This is an Android application that plays random audio commands with a customiza
 2. Transfer the generated APK file to your device.
 3. On your device, open the APK file and follow the installation instructions.
 
-## Project Structure
-
-- `app/src/main/java/com/example/komendystrzelanie/` - Main application source code
-- `app/src/main/assets/Audio/` - Audio files used by the app
 
 ## Customization
 
