@@ -43,27 +43,45 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+const val DELAY_AFTER_PLAYING_SPECIFIC_COMMANDS = 3000L // Delay after playing specific audio files
 
 @Composable
 fun AudioButtonScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    var mediaPlayer by remember { mutableStateOf(MediaPlayer()) }
     var delayText by remember { mutableStateOf("0") }
     var audioJob by remember { mutableStateOf<Job?>(null) }
 
-
-    val Level1 = listOf(
+    val level1 = listOf(
         "lewo.mp3",
         "prawo.mp3",
         "lewo_up.mp3",
         "prawo_up.mp3",
     )
 
-    val Level2 = listOf(
+    val level2 = listOf(
         "lewo.mp3",
         "prawo.mp3",
         "lewo_up.mp3",
         "prawo_up.mp3",
+        "tyl_przez_lewe.mp3",
+        "tyl_przez_prawe.mp3",
+        "tyl_przez_lewe_up.mp3",
+        "tyl_przez_prawe_up.mp3",
+    )
+
+    val level3 = listOf(
+        "lewo.mp3",
+        "prawo.mp3",
+        "lewo_up.mp3",
+        "prawo_up.mp3",
+        "tyl_przez_lewe.mp3",
+        "tyl_przez_prawe.mp3",
+        "tyl_przez_lewe_up.mp3",
+        "tyl_przez_prawe_up.mp3",
+        "pierwsza.mp3",
+        "druga.mp3",
+        "trzecia.mp3",
     )
 
     // Clean up MediaPlayer when composable is disposed
@@ -117,15 +135,9 @@ fun AudioButtonScreen(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 audioJob?.cancel()
-                mediaPlayer?.stop()
-                mediaPlayer?.release()
-                mediaPlayer = null
                 // Set delayMs only when Button is clicked
                 val delayMs = delayText.toLongOrNull()?.coerceAtMost(5000L) ?: 0L
-                audioJob = startAudioLoop(context, Level1, delayMs) { player ->
-                    mediaPlayer?.release()
-                    mediaPlayer = player
-                }
+                audioJob = startAudioLoop(context, level1, delayMs,mediaPlayer) {}
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -140,15 +152,10 @@ fun AudioButtonScreen(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 audioJob?.cancel()
-                mediaPlayer?.stop()
-                mediaPlayer?.release()
-                mediaPlayer = null
                 // Set delayMs only when Button is clicked
                 val delayMs = delayText.toLongOrNull()?.coerceAtMost(5000L) ?: 0L
-                audioJob = startAudioLoop(context, Level2, delayMs) { player ->
-                    mediaPlayer?.release()
-                    mediaPlayer = player
-                }
+                audioJob = startAudioLoop(context, level2, delayMs,mediaPlayer) {}
+
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -158,15 +165,35 @@ fun AudioButtonScreen(modifier: Modifier = Modifier) {
         ) {
             Text("Start lvl 2")
         }
+        //Start lvl3 Button
+        Button(
+            onClick = {
+                audioJob?.cancel()
+                // Set delayMs only when Button is clicked
+                val delayMs = delayText.toLongOrNull()?.coerceAtMost(5000L) ?: 0L
+                audioJob = startAudioLoop(context, level3, delayMs,mediaPlayer) {}
+
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .heightIn(min = 100.dp),
+            shape = RectangleShape
+        ) {
+            Text("Start lvl 3")
+        }
 
         // Stop Button
         Button(
             onClick = {
                 audioJob?.cancel()
                 audioJob = null
-                mediaPlayer?.stop()
-                mediaPlayer?.release()
-                mediaPlayer = null
+                mediaPlayer.let {
+                    if (it.isPlaying) {
+                        it.stop()
+                    }
+                    it.release()
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -182,51 +209,50 @@ fun AudioButtonScreen(modifier: Modifier = Modifier) {
 }
 
 
-suspend fun playAudioFromAssets(context: Context, fileName: String): Boolean {
-    return try {
-        val player = MediaPlayer()
+suspend fun playAudioFromAssets(context: Context, fileName: String, player: MediaPlayer): Boolean {
+    try {
         val afd = context.assets.openFd("Audio/$fileName")
         player.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
         player.prepare()
 
         suspendCancellableCoroutine { continuation ->
             player.setOnCompletionListener {
-                player.release()
                 continuation.resume(true)
             }
             player.setOnErrorListener { _, _, _ ->
-                player.release()
                 continuation.resume(false)
                 true
             }
             continuation.invokeOnCancellation {
                 player.stop()
-                player.release()
             }
             player.start()
         }
+        return true
     } catch (e: Exception) {
         e.printStackTrace()
-        false
+        return false
     }
 }
 
-
-fun startAudioLoop(context: Context, audioFiles: List<String>, delayMs: Long, setMediaPlayer: (MediaPlayer?) -> Unit): Job {
+fun startAudioLoop(context: Context, audioFiles: List<String>, delayMs: Long, mediaPlayer: MediaPlayer, setMediaPlayer: (MediaPlayer?) -> Unit): Job {
     return CoroutineScope(Dispatchers.Main).launch {
         try {
             while (isActive) {
                 val randomAudio = audioFiles.random()
 
-                // Odtwórz audio i czekaj na zakończenie
-                val success = playAudioFromAssets(context, randomAudio)
+                mediaPlayer.reset()
+                val success = playAudioFromAssets(context, randomAudio, mediaPlayer)
                 if (!success || !isActive) break
 
-                // Czekaj delay przed następnym
+                // Delay for these specific files
+                if (randomAudio == "pierwsza.mp3" || randomAudio == "druga.mp3" || randomAudio == "trzecia.mp3") {
+                    delay(DELAY_AFTER_PLAYING_SPECIFIC_COMMANDS)
+                }
+
                 delay(delayMs)
             }
         } catch (e: CancellationException) {
-            // Normalne anulowanie
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
