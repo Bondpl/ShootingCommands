@@ -19,6 +19,8 @@ import com.example.komendystrzelanie.ui.theme.KomendyStrzelanieTheme
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import com.example.komendystrzelanie.ui.screens.home.HomeScreen
+import com.example.komendystrzelanie.ui.screens.settings.SettingsScreen
 
 
 data class BottomNavigationItem(
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
                         "Home",
                         Icons.Filled.Home,
                         Icons.Outlined.Home,
-                        screen = { AudioButtonScreen() }
+                        screen = { HomeScreen() }
                     ),
                     BottomNavigationItem(
                         "Settings",
@@ -88,15 +90,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 const val DELAY_AFTER_PLAYING_SPECIFIC_COMMANDS = 3000L // Delay after playing specific audio files
-
-
 
 
 @Preview(showBackground = true)
 @Composable
-fun AudioButtonScreenPreview() {
+fun HomeScreenPreview() {
     KomendyStrzelanieTheme {
-        AudioButtonScreen()
+        HomeScreen()
     }
 }
