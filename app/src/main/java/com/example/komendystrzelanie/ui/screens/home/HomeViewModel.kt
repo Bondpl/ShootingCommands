@@ -45,8 +45,16 @@ class HomeViewModel(private val settingsRepository: SettingsRepository) : ViewMo
         "tyl_przez_lewe_up.mp3",
         "tyl_przez_prawe_up.mp3",
     )
-
+    // Double the amount of normal commands to increase their occurrence relative to position commands (first/second/third)
     val level3 = listOf(
+        "lewo.mp3",
+        "prawo.mp3",
+        "lewo_up.mp3",
+        "prawo_up.mp3",
+        "tyl_przez_lewe.mp3",
+        "tyl_przez_prawe.mp3",
+        "tyl_przez_lewe_up.mp3",
+        "tyl_przez_prawe_up.mp3",
         "lewo.mp3",
         "prawo.mp3",
         "lewo_up.mp3",
