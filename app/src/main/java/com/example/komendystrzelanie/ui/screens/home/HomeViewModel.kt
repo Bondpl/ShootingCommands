@@ -6,14 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.komendystrzelanie.data.preferences.SettingsRepository
-import com.example.komendystrzelanie.utils.DELAY_AFTER_PLAYING_SPECIFIC_COMMANDS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -21,9 +18,7 @@ import kotlin.coroutines.resume
 
 class HomeViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
     private val _delayText = MutableStateFlow("0")
-    val delayText = _delayText.asStateFlow()
     private val _positionDelayText = MutableStateFlow("0")
-    val positionDelayText = _positionDelayText.asStateFlow()
 
     private var mediaPlayer = MediaPlayer()
     private var audioJob: Job? = null
@@ -141,6 +136,7 @@ class HomeViewModel(private val settingsRepository: SettingsRepository) : ViewMo
                             player.stop()
                         }
                     } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
                 player.start()
