@@ -8,8 +8,11 @@ This is an Android application that plays random audio commands with a customiza
 - Set custom delay (max 5000 ms) between commands
 - Start and stop playback at any time
 - Simple and intuitive UI
+- Position commands occur less frequently than other command types
 
 ## Getting Started
+
+You can **download the latest APK from the [Releases tab](https://github.com/Bondpl/ShootingCommands/releases)** on GitHub.
 
 ### Prerequisites
 
