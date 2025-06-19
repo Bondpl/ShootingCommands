@@ -1,4 +1,3 @@
-// ui/screens/settings/SettingsScreen.kt
 package com.example.komendystrzelanie.ui.screens.settings
 
 import androidx.compose.foundation.layout.Arrangement
@@ -7,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -24,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.komendystrzelanie.data.preferences.SettingsRepository
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun SettingsScreen(
@@ -34,8 +33,16 @@ fun SettingsScreen(
     val audioDelay by viewModel.audioDelay.collectAsState()
     var delayText by remember { mutableStateOf(audioDelay.toString()) }
     val audioPositionDelay by viewModel.audioPositionChange.collectAsState()
-    var delayPostitionText by remember { mutableStateOf(audioPositionDelay.toString()) }
+    var delayPositionText by remember { mutableStateOf(audioPositionDelay.toString()) }
     var isError by remember { mutableStateOf(false) }
+
+    LaunchedEffect(audioDelay) {
+        delayText = audioDelay.toString()
+    }
+
+    LaunchedEffect(audioPositionDelay) {
+        delayPositionText = audioPositionDelay.toString()
+    }
 
     Column(
         modifier = Modifier
@@ -60,13 +67,23 @@ fun SettingsScreen(
             value = delayText,
             onValueChange = {
                 delayText = it
-                val newDelayValue = it.toLongOrNull()
-                isError = newDelayValue == null || it.isBlank()
+                if(it.isBlank()){
+                    delayText = "0"
+                    viewModel.updateAudioDelay(0)
+                    isError = false
+                }
+                else{
+                    val newDelayValue = it.toLongOrNull()
+                    isError = newDelayValue == null
 
-                if (!isError && newDelayValue != null) {
-                    val limitedValue = newDelayValue.coerceAtMost(5000L)
-                    delayText = limitedValue.toString()
-                    viewModel.updateAudioDelay(limitedValue)
+                    if (!isError && newDelayValue != null) {
+                        val limitedValue = newDelayValue.coerceAtMost(5000L)
+                        delayText = limitedValue.toString()
+                        viewModel.updateAudioDelay(limitedValue)
+                    }
+                    else{
+                        delayText = it
+                    }
                 }
             },
             label = { Text("Max 5000ms") },
@@ -78,29 +95,36 @@ fun SettingsScreen(
                     Text("Saved")
                 }
             },
+            singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
         )
 
-        //Audio Delay after only changing position
         Text(
             text = "Audio Delay after only changing position (ms):",
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(vertical = 8.dp)
         )
         OutlinedTextField(
-            value = delayPostitionText,
+            value = delayPositionText,
             onValueChange = {
-                delayPostitionText = it
-                val newDelayValue = it.toLongOrNull()
-                isError = newDelayValue == null || it.isBlank()
+                if (it.isBlank()){
+                    delayPositionText = "0"
+                    viewModel.updateAudioPositionDelay(0)
+                    isError = false
+                } else {
+                    val newDelayValue = it.toLongOrNull()
+                    isError = newDelayValue == null
 
-                if (!isError && newDelayValue != null) {
-                    val limitedValue = newDelayValue.coerceAtMost(10000L)
-                    delayPostitionText = limitedValue.toString()
-                    viewModel.updateAudioPositionDelay(limitedValue)
+                    if (!isError && newDelayValue != null) {
+                        val limitedValue = newDelayValue.coerceAtMost(10000L)
+                        delayPositionText = limitedValue.toString()
+                        viewModel.updateAudioPositionDelay(limitedValue)
+                    } else {
+                        delayPositionText = it
+                    }
                 }
             },
             label = { Text("Max 10000ms") },
@@ -112,6 +136,7 @@ fun SettingsScreen(
                     Text("Saved")
                 }
             },
+            singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier
                 .fillMaxWidth()
