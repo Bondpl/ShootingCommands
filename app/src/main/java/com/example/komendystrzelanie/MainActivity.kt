@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                     )
                 )
 
-                var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
+                var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
 
                 Scaffold(
                     bottomBar = {
@@ -90,9 +90,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-const val DELAY_AFTER_PLAYING_SPECIFIC_COMMANDS = 3000L // Delay after playing specific audio files
-
 
 @Preview(showBackground = true)
 @Composable
