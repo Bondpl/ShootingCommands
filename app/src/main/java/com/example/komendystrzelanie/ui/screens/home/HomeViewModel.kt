@@ -15,6 +15,9 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 
 class HomeViewModel(private val settingsRepository: SettingsRepository) : ViewModel() {
     private val _delayText = MutableStateFlow("0")
@@ -22,6 +25,12 @@ class HomeViewModel(private val settingsRepository: SettingsRepository) : ViewMo
 
     private var mediaPlayer = MediaPlayer()
     private var audioJob: Job? = null
+
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onPause(owner: LifecycleOwner) {
+            stopAudio()
+        }
+    }
 
     val level1 = listOf(
         "lewo.mp3",
@@ -75,6 +84,7 @@ class HomeViewModel(private val settingsRepository: SettingsRepository) : ViewMo
                 _positionDelayText.value = delay.toString()
             }
         }
+        ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleObserver)
     }
 
     fun startAudio(context: Context, audioFiles: List<String>) {
@@ -151,6 +161,7 @@ class HomeViewModel(private val settingsRepository: SettingsRepository) : ViewMo
         super.onCleared()
         stopAudio()
         mediaPlayer.release()
+        ProcessLifecycleOwner.get().lifecycle.removeObserver(lifecycleObserver)
     }
 
     class Factory(private val settingsRepository: SettingsRepository) : ViewModelProvider.Factory {

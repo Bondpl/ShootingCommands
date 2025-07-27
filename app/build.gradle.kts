@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.komendystrzelanie"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -60,4 +60,5 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore.preferences.v100)
     implementation(libs.androidx.lifecycle.viewmodel.compose.v270)
+    implementation(libs.androidx.lifecycle.process)
 }
