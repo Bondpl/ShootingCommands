@@ -34,7 +34,8 @@ fun SettingsScreen(
     var delayText by remember { mutableStateOf(audioDelay.toString()) }
     val audioPositionDelay by viewModel.audioPositionChange.collectAsState()
     var delayPositionText by remember { mutableStateOf(audioPositionDelay.toString()) }
-    var isError by remember { mutableStateOf(false) }
+    var isErrorDelayText by remember { mutableStateOf(false) }
+    var isErrorPositionDelayText by remember { mutableStateOf(false) }
 
     LaunchedEffect(audioDelay) {
         delayText = audioDelay.toString()
@@ -70,13 +71,13 @@ fun SettingsScreen(
                 if(it.isBlank()){
                     delayText = "0"
                     viewModel.updateAudioDelay(0)
-                    isError = false
+                    isErrorDelayText = false
                 }
                 else{
                     val newDelayValue = it.toLongOrNull()
-                    isError = newDelayValue == null
+                    isErrorDelayText = newDelayValue == null
 
-                    if (!isError && newDelayValue != null) {
+                    if (!isErrorDelayText && newDelayValue != null) {
                         val limitedValue = newDelayValue.coerceAtMost(5000L)
                         delayText = limitedValue.toString()
                         viewModel.updateAudioDelay(limitedValue)
@@ -87,9 +88,9 @@ fun SettingsScreen(
                 }
             },
             label = { Text("Max 5000ms") },
-            isError = isError,
+            isError = isErrorDelayText,
             supportingText = {
-                if (isError) {
+                if (isErrorDelayText) {
                     Text("provide a valid number")
                 } else {
                     Text("Saved")
@@ -113,12 +114,12 @@ fun SettingsScreen(
                 if (it.isBlank()){
                     delayPositionText = "0"
                     viewModel.updateAudioPositionDelay(0)
-                    isError = false
+                    isErrorPositionDelayText = false
                 } else {
                     val newDelayValue = it.toLongOrNull()
-                    isError = newDelayValue == null
+                    isErrorPositionDelayText = newDelayValue == null
 
-                    if (!isError && newDelayValue != null) {
+                    if (!isErrorPositionDelayText && newDelayValue != null) {
                         val limitedValue = newDelayValue.coerceAtMost(10000L)
                         delayPositionText = limitedValue.toString()
                         viewModel.updateAudioPositionDelay(limitedValue)
@@ -128,9 +129,9 @@ fun SettingsScreen(
                 }
             },
             label = { Text("Max 10000ms") },
-            isError = isError,
+            isError = isErrorPositionDelayText,
             supportingText = {
-                if (isError) {
+                if (isErrorPositionDelayText) {
                     Text("provide a valid number")
                 } else {
                     Text("Saved")
